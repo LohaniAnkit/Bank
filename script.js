@@ -251,6 +251,11 @@ btnLogin.addEventListener("click", function (e) {
 
   if (currentAccount?.pin === +inputLoginPin.value) {
     // Display UI and message
+    swal(
+      "Log-In Successful",
+      "Thank you for being an awesome customer!",
+      "success"
+    );
     labelWelcome.textContent = `Welcome back, ${
       currentAccount.owner.split(" ")[0]
     }`;
@@ -285,6 +290,8 @@ btnLogin.addEventListener("click", function (e) {
 
     // Update UI
     updateUI(currentAccount);
+  } else {
+    swal("Wrong ID or Password", "Please Try again with correct ID & Password");
   }
 });
 
@@ -297,26 +304,55 @@ btnTransfer.addEventListener("click", function (e) {
   );
   inputTransferAmount.value = inputTransferTo.value = "";
 
-  if (
-    amount > 0 &&
-    receiverAcc &&
-    currentAccount.balance >= amount &&
-    receiverAcc?.username !== currentAccount.username
-  ) {
-    // Doing the transfer
-    currentAccount.movements.push(-amount);
-    receiverAcc.movements.push(amount);
+  if (amount > 0) {
+    if (receiverAcc) {
+      if (currentAccount.balance >= amount) {
+        if (receiverAcc?.username !== currentAccount.username) {
+          swal(
+            "Successfully Transfered",
+            `your amount of ${formatCur(
+              amount,
+              receiverAcc.locale,
+              receiverAcc.currency
+            )} has been transfered to ${receiverAcc?.owner} successfully`,
+            "success"
+          );
+          currentAccount.movements.push(-amount);
+          receiverAcc.movements.push(amount);
 
-    // Add transfer date
-    currentAccount.movementsDates.push(new Date().toISOString());
-    receiverAcc.movementsDates.push(new Date().toISOString());
+          // Add transfer date
+          currentAccount.movementsDates.push(new Date().toISOString());
+          receiverAcc.movementsDates.push(new Date().toISOString());
 
-    // Update UI
-    updateUI(currentAccount);
+          // Update UI
+          updateUI(currentAccount);
 
-    // Reset timer
-    clearInterval(timer);
-    timer = startLogOutTimer();
+          // Reset timer
+          clearInterval(timer);
+          timer = startLogOutTimer();
+        } else {
+          swal("oops!", "Cannot Transfer To Own Account!", "warning");
+        }
+      } else {
+        swal(
+          "Insufficient Funds",
+          "Yo do not have enough funds in your account!",
+          "warning"
+        );
+      }
+    } else {
+      swal(
+        "Sigh!",
+        "The account you are trying to send money doesn't exist.",
+        "error"
+      );
+    }
+  } else {
+    swal(
+      "Insufficient Funds",
+      "Yo do not have enough funds in your account!",
+      "warning"
+    );
   }
 });
 
@@ -325,48 +361,72 @@ btnLoan.addEventListener("click", function (e) {
 
   const amount = Math.floor(inputLoanAmount.value);
 
-  if (
-    amount > 0 &&
-    currentAccount.movements.some((mov) => mov >= amount * 0.1)
-  ) {
-    setTimeout(function () {
-      // Add movement
-      currentAccount.movements.push(amount);
+  if (amount > 0) {
+    if (currentAccount.movements.some((mov) => mov >= amount * 0.1)) {
+      setTimeout(function () {
+        // Add movement
+        currentAccount.movements.push(amount);
 
-      // Add loan date
-      currentAccount.movementsDates.push(new Date().toISOString());
+        // Add loan date
+        currentAccount.movementsDates.push(new Date().toISOString());
 
-      // Update UI
-      updateUI(currentAccount);
+        // Update UI
+        updateUI(currentAccount);
 
-      // Reset timer
-      clearInterval(timer);
-      timer = startLogOutTimer();
-    }, 2500);
+        // Reset timer
+        clearInterval(timer);
+        timer = startLogOutTimer();
+      }, 2500);
+    } else {
+      swal(
+        "oops!",
+        "Total amount must not exceed 10X the maximum deposit",
+        "error"
+      );
+    }
+  } else {
+    swal("oops!", "Total amount must be greater than 0", "error");
   }
+
   inputLoanAmount.value = "";
 });
 
 btnClose.addEventListener("click", function (e) {
   e.preventDefault();
 
-  if (
-    inputCloseUsername.value === currentAccount.username &&
-    +inputClosePin.value === currentAccount.pin
-  ) {
-    const index = accounts.findIndex(
-      (acc) => acc.username === currentAccount.username
-    );
-    // .indexOf(23)
+  swal({
+    title: "Are you sure?",
+    text: "Once deleted, you will not be able to recover this Bank Account",
+    icon: "warning",
+    buttons: true,
+    dangerMode: true,
+  }).then((willDelete) => {
+    if (willDelete) {
+      if (
+        inputCloseUsername.value === currentAccount.username &&
+        +inputClosePin.value === currentAccount.pin
+      ) {
+        const index = accounts.findIndex(
+          (acc) => acc.username === currentAccount.username
+        );
+        // .indexOf(23)
 
-    // Delete account
-    accounts.splice(index, 1);
+        // Delete account
+        accounts.splice(index, 1);
 
-    // Hide UI
-    containerApp.style.opacity = 0;
-  }
+        // Hide UI
+        containerApp.style.opacity = 0;
+      }
 
-  inputCloseUsername.value = inputClosePin.value = "";
+      inputCloseUsername.value = inputClosePin.value = "";
+
+      swal("Account Closed, Pleasure Doing Business with you", {
+        icon: "success",
+      });
+    } else {
+      swal("Thank you for continuing our Service!");
+    }
+  });
 });
 
 let sorted = false;
