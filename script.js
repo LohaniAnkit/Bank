@@ -239,6 +239,7 @@ let currentAccount, timer;
 // currentAccount = account1;
 // updateUI(currentAccount);
 // containerApp.style.opacity = 100;
+// containerUserId.style.display = "none";
 
 btnLogin.addEventListener("click", function (e) {
   // Prevent form from submitting

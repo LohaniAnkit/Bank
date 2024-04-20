@@ -10,6 +10,13 @@
   box-sizing: inherit;
 }
 
+.wrapper {
+  max-width: 1320px;
+  border-radius: 15px;
+  text-align: center;
+  margin: auto;
+}
+
 html {
   font-size: 62.5%;
   box-sizing: border-box;
@@ -100,15 +107,15 @@ nav {
 
 .userIdAndPassword {
   position: relative;
-  max-width: 100rem;
-  margin: 4rem auto;
+  max-width: 500px;
+  margin: 2vh 25%;
   display: grid;
-  grid-template-columns: 4fr 3fr;
-  grid-template-rows: auto repeat(3, 5rem) auto;
   gap: 2rem;
-
-  /* NOTE This creates the fade in/out anumation */
-  transition: all 1s;
+  border: brown;
+  border-style: solid;
+  border-radius: 20px;
+  padding: 2% 6%;
+  justify-content: center;
 }
 
 .balance {
