@@ -108,7 +108,7 @@ nav {
 .userIdAndPassword {
   position: relative;
   max-width: 500px;
-  margin: 2vh 25%;
+  margin: 2vh auto;
   display: grid;
   gap: 2rem;
   border: brown;
